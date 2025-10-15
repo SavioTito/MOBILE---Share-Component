@@ -10,6 +10,7 @@ import {
   Modal,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 
 const contacts = [
   {
@@ -76,11 +77,22 @@ const contacts = [
 
 const ShareDrawer = ({ visible, onClose }) => {
   const [selected, setSelected] = useState([]);
+  const [copiedText, setCopiedText] = useState("");
+  const invitationLink = "https://saviotito.learnings";
 
   const toggleSelect = (name) => {
     setSelected((prev) =>
       prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]
     );
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(invitationLink);
+  };
+
+  const fetchCopiedText = async () => {
+    const text = await Clipboard.getStringAsync();
+    setCopiedText(text);
   };
 
   useEffect(() => {
@@ -122,11 +134,11 @@ const ShareDrawer = ({ visible, onClose }) => {
             <View style={styles.form}>
               <TextInput
                 placeholder="your invitation link"
-                value="https://saviotito.learning"
+                value={invitationLink}
                 editable={false}
                 style={styles.linkInput}
               />
-              <Pressable style={styles.icon}>
+              <Pressable style={styles.icon} onPress={copyToClipboard}>
                 <Ionicons name="copy-outline" size={20} color="#555" />
               </Pressable>
             </View>
@@ -241,9 +253,10 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: "absolute",
-    right: 12,
-    top: "50%",
+    right: 5,
+    top: "30%",
     transform: [{ translateY: -11 }],
+    padding: 10,
   },
   contactArea: { marginTop: 25, width: "100%" },
   contactDescription: { fontSize: 14, fontWeight: "bold", marginBottom: 12 },
